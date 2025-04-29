@@ -10,12 +10,10 @@ class CartController {
             console.error("Error al crear un nuevo carrito", error)
             res.status(500).json({ error: "Error del Server"})
         }
-
     }
 
     async findCart(req,res){
-        const {cartId} = req.body;
-
+        const cartId = req.params.cid;
         try {
             const carrito = await CartService.findCart(cartId);
 
@@ -32,10 +30,13 @@ class CartController {
     }
 
     async addProductToCart(req,res){
-        const {cid, pid, quantity} = req.body;
+        const cartId = req.params.cid
+        const productid = req.params.pid
+        const quantity = req.body.quantity || 1;
+
 
         try{
-            const actualizarCarrito = await CartService.addProductToCart(cid, pid, quantity);
+            const actualizarCarrito = await CartService.addProductToCart(cartId, productid, quantity);
             res.json(actualizarCarrito);
         }catch (err){
             res.status(500).send("Error en el servidor ", err)
@@ -64,6 +65,7 @@ class CartController {
     }
 
     async updateProductQuantity(req,res){
+        debugger
         const {cid, pid} = req.params;
         const {quantity} = req.body;
         try {
@@ -81,7 +83,11 @@ class CartController {
         const {cid} = req.params;
         try{
             const updatedCart = await CartService.outedCart(cid, pid);
-        }catch(err){}
+            res.json(updatedCart);
+        }catch(err){
+            console.log(err)
+            res.status(500).send("Error en el servidor ", err)
+        }
 
     }
 }
